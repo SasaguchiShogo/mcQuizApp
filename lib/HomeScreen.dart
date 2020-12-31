@@ -33,9 +33,11 @@ class HomeScreen extends StatelessWidget {
             padding: EdgeInsets.all(15),
             onPressed: () {
               Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) {
-                  return QuestionScreen();
-                }),
+                MaterialPageRoute(
+                    builder: (context) {
+                      return QuestionScreen();
+                    },
+                    maintainState: false),
               );
             },
           ),

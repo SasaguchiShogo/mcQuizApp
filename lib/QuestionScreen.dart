@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
-import 'package:mcquizapp/HomeScreen.dart';
+import 'package:mcquizapp/ResultScreen.dart';
+import 'QuestionData.dart';
+import 'dart:math' as math;
 
 class QuestionScreen extends StatefulWidget {
   @override
@@ -12,49 +14,89 @@ class _QuestionState extends State<QuestionScreen> {
   final INCOLLECT_FLAG = 0;
   var _questionOrAnswer = 0; // 0の時、問題。1の時、解答。
   var _questionIndex = 1; // 問題番号
-  var _porn = 0;
-  var _correctCount = 0;
+  var _porn = 0; // 解答の判定。0の時、正解。1の時、不正解。
+  var _correctCount = 0; // 正解数
+  var _correctIndex = 0; //正解のインデックス
+  var _randomQuestionList = [];
+
+  int randomNumber() {
+    return new math.Random.secure().nextInt(114);
+  }
+
+  List randomQuestionList(int _correctIndex) {
+    var i = 0;
+    var _questionIndex = 0;
+    var _questionList = [];
+    _questionList.add(_correctIndex);
+    while (i < 3) {
+      if (_questionList.contains(_questionIndex = (randomNumber()))) {
+      } else {
+        _questionList.add(_questionIndex);
+        i++;
+      }
+    }
+    // print(_questionList);
+    _questionList.shuffle();
+    // print(_questionList);
+    return _questionList;
+  }
 
   @override
   void initState() {
     super.initState();
+    _correctIndex = randomNumber();
+    _randomQuestionList = randomQuestionList(_correctIndex);
+    print("$_correctIndex:$_randomQuestionList");
   }
 
   Container ImageJudgementWidjet() {
     if (_porn == COLLECT_FLAG) {
       return Container(
-        child: Image(image: AssetImage('images/maru.jpg')),
-      );
+          child: Column(children: <Widget>[
+        Image(image: AssetImage('images/maru.png')),
+        Text(
+          "正解だよ〜ん",
+        )
+      ]));
     } else if (_porn == INCOLLECT_FLAG) {
       return Container(
-        child: Image(image: AssetImage('images/batsu.jpg')),
-      );
+          child: Column(children: <Widget>[
+        Image(image: AssetImage('images/batsu.png')),
+        Text("正解は「${QuestionData[_correctIndex][0]}」だよ〜ん")
+      ]));
     }
   }
 
   Container QuestionIndexCountWidget() {
     if (_questionIndex < 10) {
       return Container(
+        margin: EdgeInsets.only(top: 30),
         child: RaisedButton(
           child: Text("次の問題へ"),
           onPressed: () {
             setState(() {
               _questionIndex++;
               _questionOrAnswer = 0;
+              _correctIndex = randomNumber();
+              _randomQuestionList = randomQuestionList(_correctIndex);
+              print("$_correctIndex:$_randomQuestionList");
             });
           },
         ),
       );
     } else {
       return Container(
+        margin: EdgeInsets.only(top: 30),
         child: RaisedButton(
           child: Text("結果発表"),
           onPressed: () {
             print(_correctCount);
             Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) {
-                return HomeScreen();
-              }),
+              MaterialPageRoute(
+                  builder: (context) {
+                    return ResultScreen(params: _correctCount);
+                  },
+                  maintainState: false),
             );
           },
         ),
@@ -69,19 +111,23 @@ class _QuestionState extends State<QuestionScreen> {
         children: <Widget>[
           Container(
             margin: EdgeInsets.only(top: 50),
-            child: ButtonTheme(
-                minWidth: MediaQuery.of(context).size.width - 40,
-                height: 100,
+            child: SizedBox(
+                width: MediaQuery.of(context).size.width - 40,
+                height: 90,
                 child: RaisedButton(
                   child: Text(
-                    "Over",
+                    QuestionData[_randomQuestionList[0]][0],
                     style: TextStyle(fontSize: 20, height: 1.5),
                   ),
                   onPressed: () {
                     setState(() {
                       _questionOrAnswer = 1;
-                      _porn = COLLECT_FLAG;
-                      _correctCount++;
+                      if (_correctIndex == _randomQuestionList[0]) {
+                        _porn = COLLECT_FLAG;
+                        _correctCount++;
+                      } else {
+                        _porn = INCOLLECT_FLAG;
+                      }
                     });
                   },
                   padding: EdgeInsets.all(15),
@@ -89,18 +135,23 @@ class _QuestionState extends State<QuestionScreen> {
           ),
           Container(
             margin: EdgeInsets.only(top: 10),
-            child: ButtonTheme(
-                minWidth: MediaQuery.of(context).size.width - 40,
-                height: 100,
+            child: SizedBox(
+                width: MediaQuery.of(context).size.width - 40,
+                height: 90,
                 child: RaisedButton(
                   child: Text(
-                    "HANABI",
+                    QuestionData[_randomQuestionList[1]][0],
                     style: TextStyle(fontSize: 20, height: 1.5),
                   ),
                   onPressed: () {
                     setState(() {
                       _questionOrAnswer = 1;
-                      _porn = INCOLLECT_FLAG;
+                      if (_correctIndex == _randomQuestionList[1]) {
+                        _porn = COLLECT_FLAG;
+                        _correctCount++;
+                      } else {
+                        _porn = INCOLLECT_FLAG;
+                      }
                     });
                   },
                   padding: EdgeInsets.all(15),
@@ -108,18 +159,23 @@ class _QuestionState extends State<QuestionScreen> {
           ),
           Container(
             margin: EdgeInsets.only(top: 10),
-            child: ButtonTheme(
-                minWidth: MediaQuery.of(context).size.width - 40,
-                height: 100,
+            child: SizedBox(
+                width: MediaQuery.of(context).size.width - 40,
+                height: 90,
                 child: RaisedButton(
                   child: Text(
-                    "乾いたKISS",
+                    QuestionData[_randomQuestionList[2]][0],
                     style: TextStyle(fontSize: 20, height: 1.5),
                   ),
                   onPressed: () {
                     setState(() {
                       _questionOrAnswer = 1;
-                      _porn = INCOLLECT_FLAG;
+                      if (_correctIndex == _randomQuestionList[2]) {
+                        _porn = COLLECT_FLAG;
+                        _correctCount++;
+                      } else {
+                        _porn = INCOLLECT_FLAG;
+                      }
                     });
                   },
                   padding: EdgeInsets.all(15),
@@ -127,18 +183,23 @@ class _QuestionState extends State<QuestionScreen> {
           ),
           Container(
             margin: EdgeInsets.only(top: 10),
-            child: ButtonTheme(
-                minWidth: MediaQuery.of(context).size.width - 40,
-                height: 100,
+            child: SizedBox(
+                width: MediaQuery.of(context).size.width - 40,
+                height: 90,
                 child: RaisedButton(
                   child: Text(
-                    "Hevenly kiss",
+                    QuestionData[_randomQuestionList[3]][0],
                     style: TextStyle(fontSize: 20, height: 1.5),
                   ),
                   onPressed: () {
                     setState(() {
                       _questionOrAnswer = 1;
-                      _porn = INCOLLECT_FLAG;
+                      if (_correctIndex == _randomQuestionList[3]) {
+                        _porn = COLLECT_FLAG;
+                        _correctCount++;
+                      } else {
+                        _porn = INCOLLECT_FLAG;
+                      }
                     });
                   },
                   padding: EdgeInsets.all(15),
@@ -150,9 +211,6 @@ class _QuestionState extends State<QuestionScreen> {
       return Container(
         child: Column(
           children: <Widget>[
-            Container(
-              child: Text("解答表示"),
-            ),
             ImageJudgementWidjet(),
             QuestionIndexCountWidget()
           ],
@@ -176,7 +234,7 @@ class _QuestionState extends State<QuestionScreen> {
               margin: EdgeInsets.only(top: 50, left: 20, right: 20),
               padding: EdgeInsets.all(10),
               child: Text(
-                "Q$_questionIndex. 何も語らない 君の瞳の奥に愛を探しても",
+                "Q$_questionIndex. ${QuestionData[_correctIndex][1]}",
                 style: TextStyle(fontSize: 20, height: 1.5),
               ),
             )),
