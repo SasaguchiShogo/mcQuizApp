@@ -114,7 +114,7 @@ class _QuestionState extends State<QuestionScreen> {
           child: Column(
         children: <Widget>[
           Container(
-            margin: EdgeInsets.only(top: 50),
+            margin: EdgeInsets.only(top: 30),
             child: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 height: 80,
@@ -239,8 +239,8 @@ class _QuestionState extends State<QuestionScreen> {
           children: [
             Flexible(
                 child: Container(
-              margin: EdgeInsets.only(top: 50, left: 20, right: 20),
-              padding: EdgeInsets.all(10),
+              margin: EdgeInsets.only(top: 30, left: 20, right: 20),
+              padding: EdgeInsets.all(5),
               child: Text(
                 "Q$_questionIndex. ${QuestionData[_correctIndex][1]}",
                 style: TextStyle(fontSize: 20, height: 1.5),
