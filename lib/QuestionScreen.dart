@@ -64,6 +64,10 @@ class _QuestionState extends State<QuestionScreen> {
         Image(image: AssetImage('images/batsu.png')),
         Text("正解は「${QuestionData[_correctIndex][0]}」だよ〜ん")
       ]));
+    } else {
+      return Container(
+        child: Text("エラーだお"),
+      );
     }
   }
 
@@ -113,7 +117,7 @@ class _QuestionState extends State<QuestionScreen> {
             margin: EdgeInsets.only(top: 50),
             child: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
-                height: 90,
+                height: 80,
                 child: RaisedButton(
                   child: Text(
                     QuestionData[_randomQuestionList[0]][0],
@@ -137,7 +141,7 @@ class _QuestionState extends State<QuestionScreen> {
             margin: EdgeInsets.only(top: 10),
             child: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
-                height: 90,
+                height: 80,
                 child: RaisedButton(
                   child: Text(
                     QuestionData[_randomQuestionList[1]][0],
@@ -161,7 +165,7 @@ class _QuestionState extends State<QuestionScreen> {
             margin: EdgeInsets.only(top: 10),
             child: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
-                height: 90,
+                height: 80,
                 child: RaisedButton(
                   child: Text(
                     QuestionData[_randomQuestionList[2]][0],
@@ -185,7 +189,7 @@ class _QuestionState extends State<QuestionScreen> {
             margin: EdgeInsets.only(top: 10),
             child: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
-                height: 90,
+                height: 80,
                 child: RaisedButton(
                   child: Text(
                     QuestionData[_randomQuestionList[3]][0],
@@ -215,6 +219,10 @@ class _QuestionState extends State<QuestionScreen> {
             QuestionIndexCountWidget()
           ],
         ),
+      );
+    } else {
+      return Container(
+        child: Text("エラーだお"),
       );
     }
   }

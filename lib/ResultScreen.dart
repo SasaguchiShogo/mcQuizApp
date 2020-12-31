@@ -41,7 +41,9 @@ class ResultScreen extends StatelessWidget {
           children: <Widget>[
             Container(padding: EdgeInsets.only(top: 20)),
             ResultDigreeWidget(params),
+            Text("${params * 10}点だよ〜ん"),
             Container(
+              margin: EdgeInsets.only(top: 30),
               child: RaisedButton(
                 child: Text("ホームに戻る"),
                 onPressed: () {
@@ -52,7 +54,7 @@ class ResultScreen extends StatelessWidget {
                       maintainState: false));
                 },
               ),
-            )
+            ),
           ],
         ),
       ),
