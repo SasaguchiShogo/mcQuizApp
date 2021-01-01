@@ -1,29 +1,36 @@
 import 'dart:js';
 import 'HomeScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:share/share.dart';
 
 class ResultScreen extends StatelessWidget {
   final params;
+  var _degree;
   ResultScreen({Key key, @required this.params}) : super(key: key);
 
   Container ResultDigreeWidget(int params) {
     if (params <= 5) {
       return Container(
-        child: Text("不可", style: TextStyle(fontSize: 100, height: 1.5)),
+        child:
+            Text(_degree = "不可", style: TextStyle(fontSize: 100, height: 1.5)),
         margin: EdgeInsets.only(top: 50, bottom: 50),
       );
     } else if (params == 6) {
       return Container(
-          child: Text("可", style: TextStyle(fontSize: 200, height: 1.5)));
+          child: Text(_degree = "可",
+              style: TextStyle(fontSize: 200, height: 1.5)));
     } else if (params == 7) {
       return Container(
-          child: Text("良", style: TextStyle(fontSize: 200, height: 1.5)));
+          child: Text(_degree = "良",
+              style: TextStyle(fontSize: 200, height: 1.5)));
     } else if (params == 8) {
       return Container(
-          child: Text("優", style: TextStyle(fontSize: 200, height: 1.5)));
+          child: Text(_degree = "優",
+              style: TextStyle(fontSize: 200, height: 1.5)));
     } else if (params >= 9) {
       return Container(
-          child: Text("秀", style: TextStyle(fontSize: 200, height: 1.5)));
+          child: Text(_degree = "秀",
+              style: TextStyle(fontSize: 200, height: 1.5)));
     } else {
       return Container(child: Text("😡😡😡エラーだお😡😡😡"));
     }
@@ -55,6 +62,16 @@ class ResultScreen extends StatelessWidget {
                 },
               ),
             ),
+            Container(
+              margin: EdgeInsets.only(top: 20),
+              child: RaisedButton(
+                child: Text("シェアする"),
+                onPressed: () {
+                  Share.share(
+                      '私のMr.Children検定の結果は\n【$_degree(${params * 10}点)】でした！\n↓みんなもやってみよう!↓\nhttps://mcquizapp-6a682.web.app/#/');
+                },
+              ),
+            )
           ],
         ),
       ),

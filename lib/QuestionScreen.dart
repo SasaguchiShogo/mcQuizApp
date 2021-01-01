@@ -52,18 +52,32 @@ class _QuestionState extends State<QuestionScreen> {
   Container ImageJudgementWidjet() {
     if (_porn == COLLECT_FLAG) {
       return Container(
+          margin: EdgeInsets.only(top: 20),
           child: Column(children: <Widget>[
-        Image(image: AssetImage('images/maru.png')),
-        Text(
-          "正解だよ〜ん",
-        )
-      ]));
+            Image(
+              image: AssetImage('images/maru.png'),
+              width: MediaQuery.of(context).size.width - 150,
+            ),
+            Container(
+              child: Text(
+                "正解だよ〜ん",
+              ),
+              margin: EdgeInsets.only(top: 20),
+            )
+          ]));
     } else if (_porn == INCOLLECT_FLAG) {
       return Container(
+          margin: EdgeInsets.only(top: 20),
           child: Column(children: <Widget>[
-        Image(image: AssetImage('images/batsu.png')),
-        Text("正解は「${QuestionData[_correctIndex][0]}」だよ〜ん")
-      ]));
+            Image(
+              image: AssetImage('images/batsu.png'),
+              width: MediaQuery.of(context).size.width - 150,
+            ),
+            Container(
+              child: Text("正解は「${QuestionData[_correctIndex][0]}」だよ〜ん"),
+              margin: EdgeInsets.only(top: 20),
+            )
+          ]));
     } else {
       return Container(
         child: Text("エラーだお"),
@@ -74,7 +88,7 @@ class _QuestionState extends State<QuestionScreen> {
   Container QuestionIndexCountWidget() {
     if (_questionIndex < 10) {
       return Container(
-        margin: EdgeInsets.only(top: 30),
+        margin: EdgeInsets.only(top: 20),
         child: RaisedButton(
           child: Text("次の問題へ"),
           onPressed: () {
@@ -90,7 +104,7 @@ class _QuestionState extends State<QuestionScreen> {
       );
     } else {
       return Container(
-        margin: EdgeInsets.only(top: 30),
+        margin: EdgeInsets.only(top: 20),
         child: RaisedButton(
           child: Text("結果発表"),
           onPressed: () {
