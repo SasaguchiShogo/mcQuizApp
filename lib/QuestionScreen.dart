@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
 import 'package:mcquizapp/ResultScreen.dart';
+import 'dart:async';
 import 'QuestionData.dart';
 import 'dart:math' as math;
 
@@ -18,11 +18,69 @@ class _QuestionState extends State<QuestionScreen> {
   var _correctCount = 0; // 正解数
   var _correctIndex = 0; //正解のインデックス
   var _randomQuestionList = [];
+  var _countdown = 10;
+  var _currentCountdownBar = 27.5;
+  var _countdownBarPerSecond = 8;
 
+  Timer _timer, _timerBar;
+
+  @override
+  void dispose() {
+    _stopTimer();
+    super.dispose();
+  }
+
+  // タイマーを止める関数
+  void _stopTimer() {
+    _timer.cancel();
+    _timerBar.cancel();
+  }
+
+  // 選択肢を押すときの関数
+  void _pressChoiceButton(int index) {
+    setState(() {
+      _questionOrAnswer = 1;
+      _stopTimer();
+      if (_correctIndex == _randomQuestionList[index]) {
+        _porn = COLLECT_FLAG;
+        _correctCount++;
+      } else {
+        _porn = INCOLLECT_FLAG;
+      }
+    });
+  }
+
+  // 時間を減らす関数
+  void _limitedTimer(Timer timer) {
+    if (_countdown == 0) {
+      setState(() {
+        _questionOrAnswer = 1;
+        _porn = INCOLLECT_FLAG;
+      });
+      _timer.cancel();
+    } else {
+      // print(_countdown);
+      _countdown--;
+    }
+  }
+
+  // バーを減らす関数
+  void _limtedTimerBar(Timer t) {
+    setState(() {
+      if (_currentCountdownBar >= 347.5) {
+        _timerBar.cancel();
+      }
+      // print(_countdownBarPerSecond);
+      _currentCountdownBar += _countdownBarPerSecond;
+    });
+  }
+
+  // 114までのランダムな値を返す関数
   int randomNumber() {
     return new math.Random.secure().nextInt(114);
   }
 
+  // ランダムに４つの解答を用意するリスト型の関数
   List randomQuestionList(int _correctIndex) {
     var i = 0;
     var _questionIndex = 0;
@@ -35,9 +93,7 @@ class _QuestionState extends State<QuestionScreen> {
         i++;
       }
     }
-    // print(_questionList);
     _questionList.shuffle();
-    // print(_questionList);
     return _questionList;
   }
 
@@ -46,9 +102,25 @@ class _QuestionState extends State<QuestionScreen> {
     super.initState();
     _correctIndex = randomNumber();
     _randomQuestionList = randomQuestionList(_correctIndex);
-    print("$_correctIndex:$_randomQuestionList");
+    // print("$_correctIndex:$_randomQuestionList");
+    _timer = Timer.periodic(Duration(seconds: 1), _limitedTimer);
+    _timerBar = Timer.periodic(Duration(milliseconds: 250), _limtedTimerBar);
   }
 
+  // 残り時間のバーを表示するウィジェット
+  Container LinearTimerBar() {
+    return Container(
+      child: Divider(
+        color: Colors.blue,
+        thickness: 5,
+        height: 10,
+        indent: 27.5,
+        endIndent: _currentCountdownBar,
+      ),
+    );
+  }
+
+  // 正解、不正解のイメージを表示するウィジェット
   Container ImageJudgementWidjet() {
     if (_porn == COLLECT_FLAG) {
       return Container(
@@ -62,7 +134,7 @@ class _QuestionState extends State<QuestionScreen> {
               child: Text(
                 "正解だよ〜ん",
               ),
-              margin: EdgeInsets.only(top: 20),
+              margin: EdgeInsets.only(top: 10),
             )
           ]));
     } else if (_porn == INCOLLECT_FLAG) {
@@ -75,7 +147,7 @@ class _QuestionState extends State<QuestionScreen> {
             ),
             Container(
               child: Text("正解は「${QuestionData[_correctIndex][0]}」だよ〜ん"),
-              margin: EdgeInsets.only(top: 20),
+              margin: EdgeInsets.only(top: 20, left: 20, right: 20),
             )
           ]));
     } else {
@@ -85,10 +157,11 @@ class _QuestionState extends State<QuestionScreen> {
     }
   }
 
+  // 問題数をカウントし、次の問題か結果発表に移るかを判断するウィジェット
   Container QuestionIndexCountWidget() {
     if (_questionIndex < 10) {
       return Container(
-        margin: EdgeInsets.only(top: 20),
+        margin: EdgeInsets.only(top: 10),
         child: RaisedButton(
           child: Text("次の問題へ"),
           onPressed: () {
@@ -97,7 +170,12 @@ class _QuestionState extends State<QuestionScreen> {
               _questionOrAnswer = 0;
               _correctIndex = randomNumber();
               _randomQuestionList = randomQuestionList(_correctIndex);
-              print("$_correctIndex:$_randomQuestionList");
+              _countdown = 10;
+              _currentCountdownBar = 27.5;
+              _timer = Timer.periodic(Duration(seconds: 1), _limitedTimer);
+              _timerBar =
+                  Timer.periodic(Duration(milliseconds: 250), _limtedTimerBar);
+              // print("$_correctIndex:$_randomQuestionList");
             });
           },
         ),
@@ -108,7 +186,7 @@ class _QuestionState extends State<QuestionScreen> {
         child: RaisedButton(
           child: Text("結果発表"),
           onPressed: () {
-            print(_correctCount);
+            // print("Score is ${_correctCount * 10}.");
             Navigator.of(context).push(
               MaterialPageRoute(
                   builder: (context) {
@@ -122,107 +200,36 @@ class _QuestionState extends State<QuestionScreen> {
     }
   }
 
+  // 選択肢を表示するウィジェット
+  Container ChoiceButtonWidjet(int index) {
+    return Container(
+      margin: EdgeInsets.only(top: 10),
+      child: SizedBox(
+          width: MediaQuery.of(context).size.width - 40,
+          height: 80,
+          child: RaisedButton(
+            child: Text(
+              QuestionData[_randomQuestionList[index]][0],
+              style: TextStyle(fontSize: 20, height: 1.5),
+            ),
+            onPressed: () {
+              _pressChoiceButton(index);
+            },
+            padding: EdgeInsets.all(15),
+          )),
+    );
+  }
+
+  // 問題と解答を切り替えるウィジェット
   Container SwitchQandAWidget() {
     if (_questionOrAnswer == 0) {
       return Container(
           child: Column(
         children: <Widget>[
-          Container(
-            margin: EdgeInsets.only(top: 30),
-            child: SizedBox(
-                width: MediaQuery.of(context).size.width - 40,
-                height: 80,
-                child: RaisedButton(
-                  child: Text(
-                    QuestionData[_randomQuestionList[0]][0],
-                    style: TextStyle(fontSize: 20, height: 1.5),
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _questionOrAnswer = 1;
-                      if (_correctIndex == _randomQuestionList[0]) {
-                        _porn = COLLECT_FLAG;
-                        _correctCount++;
-                      } else {
-                        _porn = INCOLLECT_FLAG;
-                      }
-                    });
-                  },
-                  padding: EdgeInsets.all(15),
-                )),
-          ),
-          Container(
-            margin: EdgeInsets.only(top: 10),
-            child: SizedBox(
-                width: MediaQuery.of(context).size.width - 40,
-                height: 80,
-                child: RaisedButton(
-                  child: Text(
-                    QuestionData[_randomQuestionList[1]][0],
-                    style: TextStyle(fontSize: 20, height: 1.5),
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _questionOrAnswer = 1;
-                      if (_correctIndex == _randomQuestionList[1]) {
-                        _porn = COLLECT_FLAG;
-                        _correctCount++;
-                      } else {
-                        _porn = INCOLLECT_FLAG;
-                      }
-                    });
-                  },
-                  padding: EdgeInsets.all(15),
-                )),
-          ),
-          Container(
-            margin: EdgeInsets.only(top: 10),
-            child: SizedBox(
-                width: MediaQuery.of(context).size.width - 40,
-                height: 80,
-                child: RaisedButton(
-                  child: Text(
-                    QuestionData[_randomQuestionList[2]][0],
-                    style: TextStyle(fontSize: 20, height: 1.5),
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _questionOrAnswer = 1;
-                      if (_correctIndex == _randomQuestionList[2]) {
-                        _porn = COLLECT_FLAG;
-                        _correctCount++;
-                      } else {
-                        _porn = INCOLLECT_FLAG;
-                      }
-                    });
-                  },
-                  padding: EdgeInsets.all(15),
-                )),
-          ),
-          Container(
-            margin: EdgeInsets.only(top: 10),
-            child: SizedBox(
-                width: MediaQuery.of(context).size.width - 40,
-                height: 80,
-                child: RaisedButton(
-                  child: Text(
-                    QuestionData[_randomQuestionList[3]][0],
-                    style: TextStyle(fontSize: 20, height: 1.5),
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _questionOrAnswer = 1;
-                      if (_correctIndex == _randomQuestionList[3]) {
-                        _porn = COLLECT_FLAG;
-                        _correctCount++;
-                      } else {
-                        _porn = INCOLLECT_FLAG;
-                      }
-                    });
-                  },
-                  padding: EdgeInsets.all(15),
-                )),
-          )
+          ChoiceButtonWidjet(0),
+          ChoiceButtonWidjet(1),
+          ChoiceButtonWidjet(2),
+          ChoiceButtonWidjet(3),
         ],
       ));
     } else if (_questionOrAnswer == 1) {
@@ -245,7 +252,7 @@ class _QuestionState extends State<QuestionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Mr.Children検定"),
+        title: Text("問題"),
         automaticallyImplyLeading: false,
       ),
       body: Center(
@@ -253,13 +260,13 @@ class _QuestionState extends State<QuestionScreen> {
           children: [
             Flexible(
                 child: Container(
-              margin: EdgeInsets.only(top: 30, left: 20, right: 20),
-              padding: EdgeInsets.all(5),
+              margin: EdgeInsets.only(top: 20, left: 20, right: 20),
               child: Text(
                 "Q$_questionIndex. ${QuestionData[_correctIndex][1]}",
                 style: TextStyle(fontSize: 20, height: 1.5),
               ),
             )),
+            LinearTimerBar(),
             SwitchQandAWidget()
           ],
         ),

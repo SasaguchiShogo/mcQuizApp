@@ -1,12 +1,12 @@
 import 'dart:js';
 import 'HomeScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:share/share.dart';
+//  import 'package:share/share.dart';
 
 class ResultScreen extends StatelessWidget {
   final params;
   var _degree;
-  ResultScreen({Key key, @required this.params}) : super(key: key);
+  ResultScreen({this.params});
 
   Container ResultDigreeWidget(int params) {
     if (params <= 5) {
@@ -40,7 +40,7 @@ class ResultScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Mr.Children検定"),
+        title: Text("結果"),
         automaticallyImplyLeading: false,
       ),
       body: Center(
@@ -62,16 +62,16 @@ class ResultScreen extends StatelessWidget {
                 },
               ),
             ),
-            Container(
-              margin: EdgeInsets.only(top: 20),
-              child: RaisedButton(
-                child: Text("シェアする"),
-                onPressed: () {
-                  Share.share(
-                      '私のMr.Children検定の結果は\n【$_degree(${params * 10}点)】でした！\n↓みんなもやってみよう!↓\nhttps://mcquizapp-6a682.web.app/#/');
-                },
-              ),
-            )
+            // Container(
+            //   margin: EdgeInsets.only(top: 20),
+            //   child: RaisedButton(
+            //     child: Text("シェアする"),
+            //     onPressed: () {
+            //       Share.share(
+            //           '私のMr.Children検定の結果は\n【$_degree(${params * 10}点)】でした！\n↓みんなもやってみよう!↓\nhttps://mcquizapp-6a682.web.app/#/');
+            //     },
+            //   ),
+            // )
           ],
         ),
       ),
